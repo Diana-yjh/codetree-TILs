@@ -35,6 +35,7 @@ func second(b: Int) {
 
 func third(s: Int, e: Int) {
     array[(s-1)...(e-1)].forEach{item in print(item, terminator: " ")}
+    print("")
 }
 
 calculate(rpt: q)
