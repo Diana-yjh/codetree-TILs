@@ -8,6 +8,11 @@ let b = readLine()!.split(separator: " ").map{Int($0)!}
 
 var result = 0
 
+if n < m {
+    print(0)
+    return
+}
+
 for i in 0..<n-m+1 {
     var array = b
 
