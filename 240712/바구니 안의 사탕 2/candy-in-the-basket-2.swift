@@ -1,7 +1,7 @@
 let input = readLine()!.split(separator: " ").map{Int($0)!}
 
 let n = input[0] // 바구니 개수
-let k = input[1] // 범위
+var k = input[1] // 범위
 
 var array = Array(repeating: 0, count: 101)
 var addArray = Array(repeating: 0, count: 101)
@@ -12,6 +12,10 @@ for _ in 0..<n {
     let coordinate = basket[1]
 
     array[coordinate] += candy
+}
+
+if k > 50 {
+    k = 50
 }
 
 for i in 0...(100 - (2 * k)) {
