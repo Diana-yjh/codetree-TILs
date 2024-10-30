@@ -66,7 +66,7 @@ class DoublyLinkedList {
         } else if (this.head.next == null) { //리스트 내 노드가 1개인 경우
             console.log(this.head.data);
             this.head = null;
-            this.head = null;
+            this.tail = null;
             this.nodeNum = 0;
         } else {
             console.log(this.head.data);
