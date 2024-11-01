@@ -57,6 +57,10 @@ class DoublyLinkedList {
 
   //뒤에 있는 빵 제거
   popBread(node) {
+    if (node === this.end()) {
+      //tail 제거일 때 무시
+      return;
+    }
     if (node === this.begin()) {
       //head 제거일 때
       this.head = node.next;
@@ -67,7 +71,7 @@ class DoublyLinkedList {
       node.prev = null;
       node.next = null;
     }
-    this.length -=1;
+    this.length -= 1;
   }
   begin() {
     return this.head;
@@ -101,7 +105,7 @@ function solution(n, inputTestCase) {
         }
         break;
       case "D":
-        if(iterator !== l.end()) {
+        if (iterator !== l.end()) {
           l.popBread(iterator);
           iterator = iterator.prev;
         }
