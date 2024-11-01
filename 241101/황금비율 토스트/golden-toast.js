@@ -68,6 +68,7 @@ class DoublyLinkedList {
       node.next = null;
     } else {
       node.prev.next = node.next;
+      node.next.prev = node.prev;
       node.prev = null;
       node.next = null;
     }
