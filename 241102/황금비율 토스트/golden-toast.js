@@ -1,25 +1,14 @@
 const fs = require("fs");
 const filePath = process.platform === "linux" ? "/dev/stdin" : "./input.txt";
 let input = fs.readFileSync(filePath).toString().trim().split("\n");
-const n = +input[0].split(" ")[0]; //식빵 개수
-const m = +input[0].split(" ")[1]; //암호문 개수
-const words = input[1].split(""); //알파벳목록
+const n = +input[0].split(" ")[0]; // 식빵 개수
+const m = +input[0].split(" ")[1]; // 암호문 개수
+const words = input[1].split(""); // 알파벳목록
 const inputTestCase = [];
 
-for (let i = 2; i <= m + 1; i++) {
-  const arr = input[i].split(" ").map((item) => item);
-
-  let newArr = [];
-  for (let j = 1; j < arr.length; j++) {
-    newArr.push(arr[j]);
-  }
-  const testCase = {
-    N: arr[0],
-    arr: newArr,
-  };
-  inputTestCase.push(testCase);
+for(let i=2; i<m+2; i++) {
+  inputTestCase.push(input[i]);
 }
-
 class Node {
   constructor(data) {
     this.data = data;
@@ -30,95 +19,118 @@ class Node {
 
 class DoublyLinkedList {
   constructor() {
-    this.END = new Node(-1);
-    this.head = this.END;
-    this.tail = this.END;
+    this.head = null;
+    this.tail = null;
     this.length = 0;
   }
 
-  //빵넣기
-  pushBread(node, newData) {
-    const newNode = new Node(newData); //새 노드
-    if (this.begin() === this.end()) {
-      //빈 배열일 때
-      this.head.prev = newNode;
-      newNode.next = this.head;
+  //처음 데이터 넣기
+  push(data) {
+    const newNode = new Node(data);
+    if (this.length === 0) {
       this.head = newNode;
-      newNode.prev = null;
+      this.tail = newNode;
     } else {
-      //iterator가 가리키는 node 앞에 추가
-      node.prev.next = newNode;
-      newNode.prev = node.prev;
-      node.prev = newNode;
-      newNode.next = node;
+      this.tail.next = newNode;
+      newNode.prev = this.tail;
+      this.tail = newNode;
     }
     this.length += 1;
   }
 
-  //뒤에 있는 빵 제거
-  popBread(node) {
-    if (node === this.end()) {
-      //tail 제거일 때 무시
+  //빵 넣기 (현재 cursor앞에 넣어야 함)
+  insertBread(cursor, data) {
+    const newNode = new Node(data);
+
+    if (!cursor) {
+      //맨 뒤에 넣는 경우
+      if (!this.head) {
+        //빈배열인경우
+        this.head = newNode;
+        this.tail = newNode;
+      } else {
+        this.tail.next = newNode;
+        newNode.prev = this.tail;
+        this.tail = newNode;
+      }
+    } else {
+      if (!cursor.prev) {
+        //맨 앞에 넣는 경우
+        this.head.prev = newNode;
+        newNode.next = this.head.next;
+        this.head = newNode;
+      } else {
+        cursor.prev.next = newNode;
+        newNode.prev = cursor.prev;
+        newNode.next = cursor;
+        cursor.prev = newNode;
+      }
+    }
+    this.length += 1;
+  }
+
+  //빵 삭제
+  deleteBread(cursor) {
+    if (!cursor) {
+      //맨뒤일때
       return;
     }
-    if (node === this.begin()) {
-      //head 제거일 때
-      this.head = node.next;
-      this.head.prev = null;
-      node.next = null;
+    if (cursor.prev) {
+      //앞 노드가 있는 경우
+      cursor.prev.next = cursor.next;
     } else {
-      node.prev.next = node.next;
-      node.next.prev = node.prev;
-      node.prev = null;
-      node.next = null;
+      this.head = cursor.next;
     }
+
+    if (cursor.next) {
+      //뒷 노드가 있는 경우
+      cursor.next.prev = cursor.prev;
+    } else {
+      this.tail = cursor.prev;
+    }
+
     this.length -= 1;
   }
-  begin() {
-    return this.head;
+}
+
+function solution(n, inputTestCase) {
+  const l = new DoublyLinkedList();
+
+  for (let i = 0; i < n; i++) {
+    l.push(words[i]);
   }
-  end() {
-    return this.tail;
+  let cursor = null;
+
+  for (let i = 0; i < m ; i++) {
+    switch (inputTestCase[i].split("")[0]) {
+      case "L":
+        if (cursor !== l.head) {
+          cursor = cursor ? cursor.prev : l.tail;
+        }
+        break;
+      case "R":
+        if (cursor !== null) {
+          cursor = cursor.next;
+        }
+        break;
+      case "D":
+        if (cursor !== null) {
+          const removeNode = cursor;
+          cursor = cursor.next;
+          l.deleteBread(removeNode);
+        }
+        break;
+      case "P":
+        l.insertBread(cursor, inputTestCase[i].split("")[2]);
+        break;
+    }
   }
-  getBread(node) {
-    return node.data;
+
+  cursor = l.head;
+  for (let i = 0; i < l.length; i++) {
+    process.stdout.write(cursor.data);
+    cursor = cursor.next;
   }
 }
 
 solution(n, inputTestCase);
-
-function solution(n, inputTestCase) {
-  const l = new DoublyLinkedList();
-  let iterator = l.end(); //맨 뒤에 iterator놓기
-  for (let i = 0; i < n; i++) {
-    l.pushBread(iterator, words[i]);
-  }
-  for (let i = 0; i < m; i++) {
-    switch (inputTestCase[i].N) {
-      case "L":
-        if (iterator !== l.begin()) {
-          iterator = iterator.prev;
-        }
-        break;
-      case "R":
-        if (iterator !== l.end()) {
-          iterator = iterator.next;
-        }
-        break;
-      case "D":
-        if (iterator !== l.end()) {
-          l.popBread(iterator);
-          iterator = iterator.prev;
-        }
-        break;
-      case "P":
-        l.pushBread(iterator, inputTestCase[i].arr[0]);
-        break;
-    }
-  }
-  iterator = l.begin();
-  for (let i = 0; i < l.length; i++) {
-    process.stdout.write(l.getBread(iterator));
-    iterator = iterator.next;
-  }
-}
