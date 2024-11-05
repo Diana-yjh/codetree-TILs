@@ -9,7 +9,7 @@ function solution(n, inputTestCase) {
   for (;;) {
     sorted = true;
     for (let i = 0; i < n - 1; i++) {
-      if (inputTestCase[i] > inputTestCase[i + 1]) {
+      if (+inputTestCase[i] > +inputTestCase[i + 1]) {
         let temp = inputTestCase[i];
         inputTestCase[i] = inputTestCase[i + 1];
         inputTestCase[i + 1] = temp;
